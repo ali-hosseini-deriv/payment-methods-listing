@@ -26,19 +26,27 @@ describe("Payment Method", () => {
   });
 
   it("Should render Country Dropdown", () => {
-    expect(true).toBe(false)
+    const dropdown_el = screen.getByTestId("country-dropdown");
+
+    expect(dropdown_el).toBeInTheDocument();
   });
 
   it("Should render Get List button", () => {
-    expect(true).toBe(false)
+    const get_list_btn_el = screen.getByRole("button", { name: "Get List" });
+
+    expect(get_list_btn_el).toBeInTheDocument();
   });
 
   it("Should render Clear button", () => {
-    expect(true).toBe(false)
+    const clr_list_btn_el = screen.getByRole("button", { name: "Clear" });
+
+    expect(clr_list_btn_el).toBeInTheDocument();
   });
 
   it("Should not render payment methods table on first render", () => {
-    expect(true).toBe(false)
+    const payment_methods_table_el = screen.queryByTestId("table-body");
+
+    expect(payment_methods_table_el).not.toBeInTheDocument();
   });
 
   it("Should get residence list on first render from websocket server", async () => {
@@ -47,31 +55,103 @@ describe("Payment Method", () => {
 
   it("Should render the options list properly", async () => {
     server.send(fake_residence_list);
+
     const options = screen.getAllByRole("option");
+
     expect(options.length).toBe(fake_residence_list.residence_list.length + 1);
   });
 
   it("Should have placeholder option as selected", () => {
-    expect(true).toBe(false)
+    expect(screen.getByText("Please select a country")).toBeInTheDocument();
   });
 
   it("Should render Clear button as disabled", () => {
-    expect(true).toBe(false)
+    const clr_list_btn_el = screen.getByRole("button", { name: "Clear" });
+
+    expect(clr_list_btn_el).toBeDisabled();
   });
 
   it("Should change the selected option properly", async () => {
-    expect(true).toBe(false)
+    server.send(fake_residence_list);
+
+    const select_placeholder_option = screen.getByRole("option", {
+      name: "Indonesia - id",
+    }) as HTMLOptionElement;
+
+    await user.selectOptions(
+      screen.getByTestId("country-dropdown"),
+      select_placeholder_option
+    );
+
+    expect(select_placeholder_option.selected).toBe(true);
   });
 
   it("Should render Clear button as enabled after country selection", async () => {
-    expect(true).toBe(false)
+    server.send(fake_residence_list);
+
+    const select_placeholder_option = screen.getByRole("option", {
+      name: "Indonesia - id",
+    }) as HTMLOptionElement;
+
+    await user.selectOptions(
+      screen.getByTestId("country-dropdown"),
+      select_placeholder_option
+    );
+
+    const clr_list_btn_el = screen.getByRole("button", { name: "Clear" });
+
+    expect(clr_list_btn_el).toBeEnabled();
   });
 
   it("Should render the payment methods list on Get List button Click", async () => {
-    expect(true).toBe(false)
+    server.send(fake_residence_list);
+
+    const clr_list_btn_el = screen.getByRole("button", {
+      name: "Clear",
+    }) as HTMLButtonElement;
+
+    expect(clr_list_btn_el.disabled).toBe(true);
+
+    const select_placeholder_option = screen.getByRole("option", {
+      name: "Indonesia - id",
+    }) as HTMLOptionElement;
+
+    await user.selectOptions(
+      screen.getByTestId("country-dropdown"),
+      select_placeholder_option
+    );
+
+    const get_list_btn_el = screen.getByText("Get List");
+
+    expect(clr_list_btn_el.disabled).toBe(false);
+
+    await user.click(get_list_btn_el);
+
+    server.send(fake_payment_methods);
+
+    expect(screen.getByText("Display Name")).toBeInTheDocument();
+    expect(screen.getByText("Supported Currencies")).toBeInTheDocument();
+    expect(screen.getByText("Description")).toBeInTheDocument();
   });
 
   it("Should clear dropdown on Clear button Click", async () => {
-    expect(true).toBe(false)
+    server.send(fake_residence_list);
+
+    const select_placeholder_option = screen.getByRole("option", {
+      name: "Indonesia - id",
+    }) as HTMLOptionElement;
+
+    await user.selectOptions(
+      screen.getByTestId("country-dropdown"),
+      select_placeholder_option
+    );
+
+    expect(select_placeholder_option.selected).toBe(true);
+
+    const clr_list_btn_el = screen.getByRole("button", { name: "Clear" });
+
+    await userEvent.click(clr_list_btn_el);
+
+    expect(select_placeholder_option.selected).toBe(false);
   });
 });
