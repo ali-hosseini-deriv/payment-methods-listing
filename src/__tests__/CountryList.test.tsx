@@ -1,4 +1,4 @@
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { UserEvent } from "@testing-library/user-event/dist/types/setup/setup";
 import WS from "jest-websocket-mock";
@@ -10,6 +10,16 @@ describe("Payment Method", () => {
   let server: WS;
   let user: UserEvent;
   let client: WebSocket;
+
+  const getCountriesList = async () => {
+    server.send(fake_residence_list);
+    const options = screen.getAllByRole("option");
+    await waitFor(() => {
+      expect(options.length).toBe(
+        fake_residence_list.residence_list.length + 1
+      );
+    });
+  };
 
   beforeEach(async () => {
     user = userEvent.setup();
@@ -26,19 +36,27 @@ describe("Payment Method", () => {
   });
 
   it("Should render Country Dropdown", () => {
-    expect(true).toBe(false)
+    expect(screen.getByTestId("country-dropdown")).toBeInTheDocument();
   });
 
   it("Should render Get List button", () => {
-    expect(true).toBe(false)
+    expect(
+      screen.getByRole("button", {
+        name: /get list/i,
+      })
+    ).toBeInTheDocument();
   });
 
   it("Should render Clear button", () => {
-    expect(true).toBe(false)
+    expect(
+      screen.getByRole("button", {
+        name: /clear/i,
+      })
+    ).toBeInTheDocument();
   });
 
   it("Should not render payment methods table on first render", () => {
-    expect(true).toBe(false)
+    expect(screen.queryByTestId("table-body")).not.toBeInTheDocument();
   });
 
   it("Should get residence list on first render from websocket server", async () => {
@@ -51,27 +69,92 @@ describe("Payment Method", () => {
     expect(options.length).toBe(fake_residence_list.residence_list.length + 1);
   });
 
-  it("Should have placeholder option as selected", () => {
-    expect(true).toBe(false)
+  it("Should have placeholder option as selected", async () => {
+    await getCountriesList();
+
+    const selected_value = screen.getByRole("option", {
+      name: /please select a country/i,
+    }) as HTMLOptionElement;
+
+    await userEvent.selectOptions(screen.getByRole("combobox"), "");
+    expect(selected_value.selected).toBe(true);
   });
 
   it("Should render Clear button as disabled", () => {
-    expect(true).toBe(false)
+    expect(
+      screen.getByRole("button", {
+        name: /clear/i,
+      })
+    ).toBeDisabled();
   });
 
   it("Should change the selected option properly", async () => {
-    expect(true).toBe(false)
+    await getCountriesList();
+
+    const selected_value = screen.getByRole("option", {
+      name: /indonesia \- id/i,
+    }) as HTMLOptionElement;
+
+    await userEvent.selectOptions(screen.getByRole("combobox"), "id");
+    expect(selected_value.selected).toBe(true);
   });
 
   it("Should render Clear button as enabled after country selection", async () => {
-    expect(true).toBe(false)
+    await getCountriesList();
+
+    const selected_value = screen.getByRole("option", {
+      name: /indonesia \- id/i,
+    }) as HTMLOptionElement;
+
+    await userEvent.selectOptions(screen.getByRole("combobox"), "id");
+    expect(selected_value.selected).toBe(true);
+
+    expect(
+      screen.getByRole("button", {
+        name: /clear/i,
+      })
+    ).toBeEnabled();
   });
 
   it("Should render the payment methods list on Get List button Click", async () => {
-    expect(true).toBe(false)
+    await getCountriesList();
+
+    const selected_value = screen.getByRole("option", {
+      name: /india \- in/i,
+    }) as HTMLOptionElement;
+
+    await userEvent.selectOptions(screen.getByRole("combobox"), "in");
+
+    const get_list_button = screen.getByRole("button", { name: /get list/i });
+
+    server.send(fake_payment_methods);
+    await userEvent.click(get_list_button);
+    const table = screen.queryByRole("table");
+    expect(table).toBeInTheDocument();
   });
 
   it("Should clear dropdown on Clear button Click", async () => {
-    expect(true).toBe(false)
+    await getCountriesList();
+
+    const selected_country = screen.getByRole("option", {
+      name: /india \- in/i,
+    }) as HTMLOptionElement;
+
+    await userEvent.selectOptions(screen.getByRole("combobox"), "in");
+
+    const get_list_button = screen.getByRole("button", { name: /get list/i });
+
+    server.send(fake_payment_methods);
+    await userEvent.click(get_list_button);
+    expect(screen.queryByRole("table")).toBeInTheDocument();
+
+    const clear_button = screen.getByRole("button", {
+      name: /clear/i,
+    });
+
+    await userEvent.click(clear_button);
+
+    expect(selected_country.selected).toBe(false);
+    expect(screen.queryByRole("table")).not.toBeInTheDocument();
   });
 });
