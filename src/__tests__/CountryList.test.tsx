@@ -1,6 +1,5 @@
-import { cleanup, render, screen, within } from "@testing-library/react";
+import {cleanup, render, screen, within} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { UserEvent } from "@testing-library/user-event/dist/types/setup/setup";
 import WS from "jest-websocket-mock";
 import CountryList from "../Components/CountryList";
 import { fake_payment_methods } from "./fakes/payment_methods";
@@ -26,19 +25,21 @@ describe("Payment Method", () => {
   });
 
   it("Should render Country Dropdown", () => {
-    expect(true).toBe(false)
+    expect(screen.getByTestId('country-dropdown')).toBeInTheDocument()
   });
 
   it("Should render Get List button", () => {
-    expect(true).toBe(false)
+    expect(screen.getByText('Get List')).toBeInTheDocument()
   });
 
   it("Should render Clear button", () => {
-    expect(true).toBe(false)
+    expect(screen.getByText('Clear')).toBeInTheDocument()
+
   });
 
   it("Should not render payment methods table on first render", () => {
-    expect(true).toBe(false)
+    expect(screen.getByTestId('country-dropdown')).toBeInTheDocument()
+    expect(screen.queryByText('table-body')).not.toBeInTheDocument()
   });
 
   it("Should get residence list on first render from websocket server", async () => {
@@ -52,26 +53,66 @@ describe("Payment Method", () => {
   });
 
   it("Should have placeholder option as selected", () => {
-    expect(true).toBe(false)
+    expect(screen.getByText('Please select a country')).toBeInTheDocument()
   });
 
   it("Should render Clear button as disabled", () => {
-    expect(true).toBe(false)
+    expect(screen.getByText('Clear')).toBeDisabled()
   });
 
   it("Should change the selected option properly", async () => {
-    expect(true).toBe(false)
+    server.send(fake_residence_list);
+    const select_placeholder_option = screen.getByRole("option", {
+      name: "Zimbabwe - zw",
+    }) as HTMLOptionElement;
+    await userEvent.selectOptions(screen.getByTestId('country-dropdown'), select_placeholder_option)
+    expect(select_placeholder_option.selected).toBe(true)
   });
 
   it("Should render Clear button as enabled after country selection", async () => {
-    expect(true).toBe(false)
+    server.send(fake_residence_list);
+    const clear_btn = screen.getByText('Clear') as HTMLButtonElement
+    expect(clear_btn.disabled).toBe(true)
+    const select_placeholder_option = screen.getByRole("option", {
+      name: "Zimbabwe - zw",
+    }) as HTMLOptionElement;
+    await userEvent.selectOptions(screen.getByTestId('country-dropdown'), select_placeholder_option)
+    expect(clear_btn.disabled).toBe(false)
+
   });
 
   it("Should render the payment methods list on Get List button Click", async () => {
-    expect(true).toBe(false)
+    server.send(fake_residence_list);
+    const clear_btn = screen.getByText('Clear') as HTMLButtonElement
+    expect(clear_btn.disabled).toBe(true)
+    const select_placeholder_option = screen.getByRole("option", {
+      name: "Zimbabwe - zw",
+    }) as HTMLOptionElement;
+    await userEvent.selectOptions(screen.getByTestId('country-dropdown'), select_placeholder_option)
+    const get_btn = screen.getByText('Get List')
+    expect(clear_btn.disabled).toBe(false)
+    await userEvent.click(get_btn)
+    server.send(fake_payment_methods);
+    expect(screen.getByText('Display Name')).toBeInTheDocument()
+    expect(screen.getByText('Supported Currencies')).toBeInTheDocument()
+    expect(screen.getByText('Description')).toBeInTheDocument()
   });
 
   it("Should clear dropdown on Clear button Click", async () => {
-    expect(true).toBe(false)
+    server.send(fake_residence_list);
+    const clear_btn = screen.getByText('Clear') as HTMLButtonElement
+    expect(clear_btn.disabled).toBe(true)
+    const select_placeholder_option = screen.getByRole("option", {
+      name: "Zimbabwe - zw",
+    }) as HTMLOptionElement;
+    const select_placeholder_option_default = screen.getByRole("option", {
+      name: "Please select a country",
+    }) as HTMLOptionElement;
+    await userEvent.selectOptions(screen.getByTestId('country-dropdown'), select_placeholder_option)
+    expect(select_placeholder_option.selected).toBe(true)
+    expect(select_placeholder_option_default.selected).toBe(false)
+    await userEvent.click(clear_btn)
+    expect(select_placeholder_option.selected).toBe(false)
+    expect(select_placeholder_option_default.selected).toBe(true)
   });
 });
