@@ -56,7 +56,7 @@ const CountryList = ({ websocket }: TCountryListProps) => {
 
   const onClearClicked = () => {
     setSelectedCountry("");
-    setPaymentMethods([])
+    setPaymentMethods([]);
   };
 
   return (
