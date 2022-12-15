@@ -26,19 +26,19 @@ describe("Payment Method", () => {
   });
 
   it("Should render Country Dropdown", () => {
-    expect(true).toBe(false)
+    expect(screen.getByTestId(/country-dropdown/)).toBeInTheDocument();
   });
 
   it("Should render Get List button", () => {
-    expect(true).toBe(false)
+    expect(screen.getByText(/Get List/)).toBeInTheDocument();
   });
 
   it("Should render Clear button", () => {
-    expect(true).toBe(false)
+    expect(screen.getByText(/Clear/)).toBeInTheDocument();
   });
 
-  it("Should not render payment methods table on first render", () => {
-    expect(true).toBe(false)
+  it("Should not render payment methods table on first render",() => {
+    expect(screen.queryByRole(/Table/)).not.toBeInTheDocument();
   });
 
   it("Should get residence list on first render from websocket server", async () => {
@@ -52,11 +52,12 @@ describe("Payment Method", () => {
   });
 
   it("Should have placeholder option as selected", () => {
-    expect(true).toBe(false)
+    expect(screen.getByRole("option", { name: "Please select a country" }).selected).toBeTruthy()
   });
 
   it("Should render Clear button as disabled", () => {
-    expect(true).toBe(false)
+    // expect(screen.getByText(/Clear/).disabled).toBeTruthy();
+    expect(screen.getByText(/Clear/)).toBeDisabled();
   });
 
   it("Should change the selected option properly", async () => {
