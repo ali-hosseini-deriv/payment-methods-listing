@@ -26,19 +26,23 @@ describe("Payment Method", () => {
   });
 
   it("Should render Country Dropdown", () => {
-    expect(true).toBe(false)
+    const dropdown = screen.getAllByTestId("country-dropdown");
+    expect(dropdown).toBeInTheDocument();
   });
 
   it("Should render Get List button", () => {
-    expect(true).toBe(false)
+    const GetListButton = screen.getByText("Get List");
+    expect(GetListButton).toBeInTheDocument();
   });
 
   it("Should render Clear button", () => {
-    expect(true).toBe(false)
+    const clearButton = screen.getByText("Clear");
+    expect(clearButton).toBeInTheDocument();
   });
 
   it("Should not render payment methods table on first render", () => {
-    expect(true).toBe(false)
+    const table = screen.queryByTestId("table-body");
+    expect(table).not.toBeInTheDocument();
   });
 
   it("Should get residence list on first render from websocket server", async () => {
@@ -52,26 +56,46 @@ describe("Payment Method", () => {
   });
 
   it("Should have placeholder option as selected", () => {
-    expect(true).toBe(false)
+    const dropdown = screen.getByTestId("country-dropdown");
+    expect(dropdown.value).toBe("");
   });
 
   it("Should render Clear button as disabled", () => {
-    expect(true).toBe(false)
+    const button = screen.getByText(/Clear/);
+    expect(button.disabled).toBe(true);
   });
 
   it("Should change the selected option properly", async () => {
-    expect(true).toBe(false)
+    server.send(fake_residence_list);
+    const dropdown = screen.getByTestId("country-dropdown");
+    userEvent.selectOptions(dropdown, "Afghanistan - af");
+    expect(dropdown.value).toBe("Afghanistan - af");
   });
 
   it("Should render Clear button as enabled after country selection", async () => {
-    expect(true).toBe(false)
+    server.send(fake_residence_list);
+    const options_list = screen.getAllByRole("option");
+    const clearBtn = screen.getByTestId("clear-button");
+    await user.selectOptions(options_list[1]);
+    expect(clearBtn.hasAttribute("disabled")).toBe(false);
   });
 
   it("Should render the payment methods list on Get List button Click", async () => {
-    expect(true).toBe(false)
+    server.send(fake_residence_list);
+    const options_list = screen.getAllByRole("option");
+    const getListBtn = screen.getByTestId("get-list-button");
+    await user.selectOptions(options_list[1]);
+    user.click(getListBtn);
+    server.send(fake_payment_methods);
+    expect(screen.getByTestId("payment-methods-list")).toBeInTheDocument();
   });
 
   it("Should clear dropdown on Clear button Click", async () => {
-    expect(true).toBe(false)
+    server.send(fake_residence_list);
+    const options_list = screen.getAllByRole("option");
+    const btn_clear = screen.getByTestId("clear-button");
+    await user.selectOptions(options[1]);
+    user.click(btn_clear);
+    expect(screen.getByTestId("country-list").value).toBe("");
   });
 });
