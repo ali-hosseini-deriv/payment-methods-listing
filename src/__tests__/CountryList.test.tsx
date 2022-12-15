@@ -26,19 +26,23 @@ describe("Payment Method", () => {
   });
 
   it("Should render Country Dropdown", () => {
-    expect(true).toBe(false)
+    const element = screen.getByTestId("country-dropdown");
+    expect(element).toBeInTheDocument();
   });
 
   it("Should render Get List button", () => {
-    expect(true).toBe(false)
+    const element = screen.getByTestId("get-list-button");
+    expect(element).toBeInTheDocument();
   });
 
   it("Should render Clear button", () => {
-    expect(true).toBe(false)
+    const element = screen.getByTestId("clear-button");
+    expect(element).toBeInTheDocument();
   });
 
-  it("Should not render payment methods table on first render", () => {
-    expect(true).toBe(false)
+  it("Should not render payment methods table on first render", async () => {
+    const element = await screen.queryByTestId("table-body");
+    expect(element).not.toBeInTheDocument();
   });
 
   it("Should get residence list on first render from websocket server", async () => {
@@ -52,26 +56,72 @@ describe("Payment Method", () => {
   });
 
   it("Should have placeholder option as selected", () => {
-    expect(true).toBe(false)
+    const options = screen.getAllByRole<HTMLOptionElement>("option");
+
+    expect(options[0].selected).toBe(true);
   });
 
   it("Should render Clear button as disabled", () => {
-    expect(true).toBe(false)
+    const element = screen.getByTestId("clear-button");
+    expect(element).toBeDisabled();
   });
 
   it("Should change the selected option properly", async () => {
-    expect(true).toBe(false)
+    server.send(fake_residence_list);
+    const element = screen.getByTestId("country-dropdown");
+    const options = screen.getAllByRole<HTMLOptionElement>("option");
+
+    await userEvent.selectOptions(
+      element,
+      fake_residence_list.residence_list[2].value
+    );
+    expect(options[3].selected).toBe(true);
   });
 
   it("Should render Clear button as enabled after country selection", async () => {
-    expect(true).toBe(false)
+    server.send(fake_residence_list);
+
+    const element = screen.getByTestId("country-dropdown");
+    const button = screen.getByTestId("clear-button");
+
+    await userEvent.selectOptions(
+      element,
+      fake_residence_list.residence_list[2].value
+    );
+
+    expect(button).toBeEnabled();
   });
 
   it("Should render the payment methods list on Get List button Click", async () => {
-    expect(true).toBe(false)
+    server.send(fake_residence_list);
+
+    const element = screen.getByTestId("country-dropdown");
+    const button = screen.getByTestId("get-list-button");
+
+    await userEvent.selectOptions(
+      element,
+      fake_residence_list.residence_list[2].value
+    );
+    userEvent.click(button);
+    server.send(fake_payment_methods)
+    const table = screen.queryByTestId('table-body');
+    expect(table).toBeInTheDocument();
   });
 
   it("Should clear dropdown on Clear button Click", async () => {
-    expect(true).toBe(false)
+    server.send(fake_residence_list);
+
+    const element = screen.getByTestId("country-dropdown");
+    const button = screen.getByTestId("clear-button");
+
+    await userEvent.selectOptions(
+      element,
+      fake_residence_list.residence_list[2].value
+    );
+    expect (button).toBeEnabled();
+    await userEvent.click(button);
+    expect (button).toBeDisabled();
+    expect(fake_residence_list.residence_list[0])
+
   });
 });

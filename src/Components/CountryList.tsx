@@ -81,8 +81,8 @@ const CountryList = ({ websocket }: TCountryListProps) => {
             );
           })}
         </select>
-        <button onClick={onGetListClicked}>Get List</button>
-        <button onClick={onClearClicked} disabled={!selected_country}>
+        <button data-testid="get-list-button" onClick={onGetListClicked}>Get List</button>
+        <button data-testid="clear-button" onClick={onClearClicked} disabled={!selected_country}>
           Clear
         </button>
       </section>
