@@ -41,8 +41,8 @@ describe("Payment Method", () => {
   });
 
   it("Should not render payment methods table on first render", () => {
-    const list = screen.getByTestId('table-body')
-    expect(list).not.toBeInTheDocument()
+   const table =  screen.queryByTestId('table-body')
+    expect(table).not.toBeInTheDocument()
   });
 
   it("Should get residence list on first render from websocket server", async () => {
@@ -56,8 +56,10 @@ describe("Payment Method", () => {
   });
 
   it("Should have placeholder option as selected", () => {
-    const option = screen.getByTestId("country-dropdown")
-    expect(option).toHaveAttribute("placeholder", "Please select a country")
+    const placeholder = screen.getByRole("option", {
+      name: "Please select a country",
+    }) as HTMLOptionElement;
+    expect(placeholder.selected).toBeTruthy();
   });
 
   it("Should render Clear button as disabled", () => {
@@ -66,30 +68,33 @@ describe("Payment Method", () => {
   });
 
   it("Should change the selected option properly", async () => {
-    fireEvent.change(screen.getByTestId('country-dropdown'),  { name:  'Afghanistan - af' })
-    let options = screen.getAllByTestId('country-dropdown') as HTMLOptionElement
-    expect(options[0].selected).toBeFalsy();
-    expect(options[1].selected).toBeTruthy();
-    expect(options[2].selected).toBeFalsy();
+    await userEvent.selectOptions(screen.getByTestId('country-dropdown'),  fake_residence_list.residence_list[0].value)
+    const options = screen.getAllByRole<HTMLOptionElement>('country-dropdown')
+    expect(options[103].selected).toBe(true);
   });
 
   it("Should render Clear button as enabled after country selection", async () => {
-    fireEvent.change(screen.getByTestId('country-dropdown'), { name:  'Afghanistan - af' })
+    const dropdown = screen.getByTestId('country-dropdown')
+    await userEvent.selectOptions(dropdown, 'Afghanistan - af')
     const clearButton = screen.getByRole('button', {name: "Clear"})
-     expect(clearButton).toBeEnabled()
+    expect(clearButton).toBeEnabled()
   });
 
   it("Should render the payment methods list on Get List button Click", async () => {
-    fireEvent.change(screen.getByTestId('country-dropdown'),  { name:  'Afghanistan - af' })
+    const dropdown = screen.getByTestId('country-dropdown')
+    await userEvent.selectOptions(dropdown, 'Afghanistan - af')
     const getListButton = screen.getByRole('button', {name: "Get List"})
-    expect(getListButton).toBeEnabled()
+    fireEvent.click(getListButton)
+    const table =  screen.queryByTestId('table-body')
+    expect(table).toBeInTheDocument()
   });
 
   it("Should clear dropdown on Clear button Click", async () => {
-    const option = screen.getByTestId("country-dropdown")
-    fireEvent.change(screen.getByTestId('country-dropdown'),  { name:  'Afghanistan - af' })
     const clearButton = screen.getByRole('button', {name: "Clear"})
     fireEvent.click(clearButton)
-    expect(option).toHaveAttribute("placeholder", "Please select a country")
+    const placeholder = screen.getByRole("option", {
+      name: "Please select a country",
+    }) as HTMLOptionElement;
+    expect(placeholder.selected).toBeTruthy();
   });
 });
