@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { UserEvent } from "@testing-library/user-event/dist/types/setup/setup";
 import WS from "jest-websocket-mock";
@@ -26,7 +26,7 @@ describe("Payment Method", () => {
   });
 
   it("Should render Country Dropdown", () => {
-    expect(screen.getByTestId("country-dropdown")).toBeInTheDocument();
+    expect(screen.getByTestId(/country-dropdown/)).toBeInTheDocument();
   });
 
   it("Should render Get List button", () => {
@@ -34,12 +34,12 @@ describe("Payment Method", () => {
   });
 
   it("Should render Clear button", () => {
-    expect(screen.getByText("Clear")).toBeInTheDocument();
+    expect(screen.getByText(/Clear/)).toBeInTheDocument();
   });
 
   it("Should not render payment methods table on first render", () => {
     server.send(fake_payment_methods);
-    expect(screen.getByTestId("table-body")).not.toBe(false);
+    expect(screen.getByTestId(/table-body/)).not.toBe(false);
   });
 
   it("Should get residence list on first render from websocket server", async () => {
@@ -55,7 +55,7 @@ describe("Payment Method", () => {
   it("Should have placeholder option as selected", () => {
     const placeholder_option = screen.getByText("Please select a country");
     const selected_option =
-      screen.getByTestId<HTMLSelectElement>("country-dropdown")
+      screen.getByTestId<HTMLSelectElement>(/country-dropdown/)
         .selectedOptions[0];
     expect(selected_option).toEqual(placeholder_option);
   });
@@ -74,9 +74,9 @@ describe("Payment Method", () => {
 
   it("Should render Clear button as enabled after country selection", async () => {
     server.send(fake_residence_list);
-    const dropdown = screen.getByTestId<HTMLSelectElement>("country-dropdown");
+    const dropdown = screen.getByTestId<HTMLSelectElement>(/country-dropdown/);
     await user.selectOptions(dropdown, "in");
-    const clear_button = screen.getByText<HTMLButtonElement>("Clear");
+    const clear_button = screen.getByText<HTMLButtonElement>(/Clear/);
     expect(clear_button.disabled).toBe(false);
   });
 
@@ -88,9 +88,9 @@ describe("Payment Method", () => {
   });
 
   it("Should clear dropdown on Clear button Click", async () => {
-    const placeholder_option = screen.getByText("Please select a country");
+    const placeholder_option = screen.getByText(/Please select a country/);
     const dropdown = screen.getByTestId<HTMLSelectElement>(/country-dropdown/);
-    const clear_button = screen.getByText<HTMLButtonElement>("Clear");
+    const clear_button = screen.getByText<HTMLButtonElement>(/Clear/);
     await user.click(clear_button);
     expect(dropdown.selectedOptions[0]).toBe(placeholder_option);
   });
