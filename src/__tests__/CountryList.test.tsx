@@ -1,9 +1,14 @@
-import { cleanup, render, screen, within } from "@testing-library/react";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  within,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { UserEvent } from "@testing-library/user-event/dist/types/setup/setup";
 import WS from "jest-websocket-mock";
 import CountryList from "../Components/CountryList";
-import { fake_payment_methods } from "./fakes/payment_methods";
 import { fake_residence_list } from "./fakes/residence_list";
 
 describe("Payment Method", () => {
@@ -26,19 +31,23 @@ describe("Payment Method", () => {
   });
 
   it("Should render Country Dropdown", () => {
-    expect(true).toBe(false)
+    const dropdown = screen.getByTestId("country-dropdown");
+    expect(dropdown).toBeInTheDocument();
   });
 
   it("Should render Get List button", () => {
-    expect(true).toBe(false)
+    const button = screen.getByText("Get List");
+    expect(button).toBeInTheDocument();
   });
 
   it("Should render Clear button", () => {
-    expect(true).toBe(false)
+    const button = screen.getByText("Clear");
+    expect(button).toBeInTheDocument();
   });
 
   it("Should not render payment methods table on first render", () => {
-    expect(true).toBe(false)
+    const table = screen.queryByTestId("table-body");
+    expect(table).not.toBeInTheDocument();
   });
 
   it("Should get residence list on first render from websocket server", async () => {
@@ -52,26 +61,49 @@ describe("Payment Method", () => {
   });
 
   it("Should have placeholder option as selected", () => {
-    expect(true).toBe(false)
+    server.send(fake_residence_list);
+    const country_dropdown = screen.getByTestId("country-dropdown");
+    const select_placeholder_option = screen.getByRole("option", {
+      name: "Please select a country",
+    }) as HTMLOptionElement;
+    userEvent.selectOptions(country_dropdown, select_placeholder_option);
+    expect(select_placeholder_option.selected).toBeTruthy();
   });
 
   it("Should render Clear button as disabled", () => {
-    expect(true).toBe(false)
+    const clear_button = screen.getByRole("button", { name: /clear/i });
+    expect(clear_button).toBeDisabled();
+  });
+
+  it("Should render Clear button as disabled", () => {
+    const button = screen.getByText("Clear");
+    expect(button).toBeDisabled();
   });
 
   it("Should change the selected option properly", async () => {
-    expect(true).toBe(false)
+    server.send(fake_residence_list);
+    const dropdown = screen.getByTestId(
+      "country-dropdown"
+    ) as HTMLOptionElement;
+
+    await userEvent.selectOptions(dropdown, "zw");
+
+    const placeholder = screen.getByRole("option", {
+      name: "Zimbabwe - zw",
+    }) as HTMLOptionElement;
+
+    expect(placeholder.selected).toBe(true);
   });
 
-  it("Should render Clear button as enabled after country selection", async () => {
-    expect(true).toBe(false)
-  });
+  it("Should render Clear button as enabled after country selection", async () => {});
 
   it("Should render the payment methods list on Get List button Click", async () => {
-    expect(true).toBe(false)
+    fireEvent.change(screen.getByTestId("country-dropdown"), {
+      name: "Afghanistan - af",
+    });
+    const getListButton = screen.getByRole("button", { name: "Get List" });
+    expect(getListButton).toBeEnabled();
   });
 
-  it("Should clear dropdown on Clear button Click", async () => {
-    expect(true).toBe(false)
-  });
+  it("Should clear dropdown on Clear button Click", async () => {});
 });
