@@ -87,7 +87,7 @@ describe("Payment Method", () => {
   });
 
   // it("Should render Clear button as enabled after country selection", async () => {
-  //   expect(true).toBe(false);
+  //   //
   // });
 
   // it("Should render the payment methods list on Get List button Click", async () => {
