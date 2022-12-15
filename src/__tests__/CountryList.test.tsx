@@ -26,19 +26,23 @@ describe("Payment Method", () => {
   });
 
   it("Should render Country Dropdown", () => {
-    expect(true).toBe(false)
+    const dropdown = screen.getByText("Please select a country");
+    expect(dropdown).toBeInTheDocument;
   });
 
   it("Should render Get List button", () => {
-    expect(true).toBe(false)
+    const get_list_btn = screen.getByText("Get List");
+    expect(get_list_btn).toBeInTheDocument;
   });
 
   it("Should render Clear button", () => {
-    expect(true).toBe(false)
+    const clear_btn = screen.getByText("Clear");
+    expect(clear_btn).toBeInTheDocument;
   });
 
   it("Should not render payment methods table on first render", () => {
-    expect(true).toBe(false)
+    const table = screen.queryByTestId("table-body");
+    expect(table).not.toBeInTheDocument;
   });
 
   it("Should get residence list on first render from websocket server", async () => {
@@ -51,27 +55,32 @@ describe("Payment Method", () => {
     expect(options.length).toBe(fake_residence_list.residence_list.length + 1);
   });
 
-  it("Should have placeholder option as selected", () => {
-    expect(true).toBe(false)
+  it("Should have placeholder option as selected", async () => {
+    server.send(fake_residence_list);
+    await userEvent.selectOptions(screen.getByTestId("country-dropdown"), "zw");
+    const selected_country = screen.getByRole("option", {
+      name: "Zimbabwe - zw",
+    }) as HTMLOptionElement;
+    expect(selected_country.selected).toBe(true);
   });
 
   it("Should render Clear button as disabled", () => {
-    expect(true).toBe(false)
+    expect(true).toBe(false);
   });
 
   it("Should change the selected option properly", async () => {
-    expect(true).toBe(false)
+    expect(true).toBe(false);
   });
 
   it("Should render Clear button as enabled after country selection", async () => {
-    expect(true).toBe(false)
+    expect(true).toBe(false);
   });
 
   it("Should render the payment methods list on Get List button Click", async () => {
-    expect(true).toBe(false)
+    expect(true).toBe(false);
   });
 
   it("Should clear dropdown on Clear button Click", async () => {
-    expect(true).toBe(false)
+    expect(true).toBe(false);
   });
 });
