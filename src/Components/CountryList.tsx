@@ -70,7 +70,7 @@ const CountryList = ({ websocket }: TCountryListProps) => {
             setSelectedCountry(e.target.value);
           }}
         >
-          <option value="" disabled>
+          <option aria-label="placeholder" value="" disabled>
             Please select a country
           </option>
           {countries.map((c) => {
@@ -81,8 +81,8 @@ const CountryList = ({ websocket }: TCountryListProps) => {
             );
           })}
         </select>
-        <button onClick={onGetListClicked}>Get List</button>
-        <button onClick={onClearClicked} disabled={!selected_country}>
+        <button aria-label='get-list' onClick={onGetListClicked}>Get List</button>
+        <button aria-label='clear-list' onClick={onClearClicked} disabled={!selected_country}>
           Clear
         </button>
       </section>

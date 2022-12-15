@@ -1,4 +1,4 @@
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { UserEvent } from "@testing-library/user-event/dist/types/setup/setup";
 import WS from "jest-websocket-mock";
@@ -26,19 +26,27 @@ describe("Payment Method", () => {
   });
 
   it("Should render Country Dropdown", () => {
-    expect(true).toBe(false)
+    const dropdown = screen.getByTestId('country-dropdown')
+    expect(dropdown).toBeInTheDocument();
   });
 
   it("Should render Get List button", () => {
-    expect(true).toBe(false)
+    const list_button = screen.getByRole('button', {
+      name: /get-list/i
+    })
+    expect(list_button).toBeInTheDocument();
   });
 
   it("Should render Clear button", () => {
-    expect(true).toBe(false)
+    const clear_list_button = screen.getByRole('button', {
+      name: /clear-list/i
+    })
+    expect(clear_list_button).toBeInTheDocument();
   });
 
   it("Should not render payment methods table on first render", () => {
-    expect(true).toBe(false)
+    const table_body = screen.queryByTestId('table-body')
+    expect(table_body).toBeNull();
   });
 
   it("Should get residence list on first render from websocket server", async () => {
@@ -52,15 +60,29 @@ describe("Payment Method", () => {
   });
 
   it("Should have placeholder option as selected", () => {
-    expect(true).toBe(false)
+    const dropdown = screen.getByTestId('country-dropdown');
+    const placeholder = screen.queryByRole('option', {name: /placeholder/i})
+    expect(dropdown).toBeInTheDocument();
+    expect(placeholder).toBeVisible();
   });
 
   it("Should render Clear button as disabled", () => {
-    expect(true).toBe(false)
+    const clear_list_button = screen.getByRole('button', {
+      name: /clear-list/i
+    })
+    expect(clear_list_button).toBeDisabled();
   });
 
-  it("Should change the selected option properly", async () => {
-    expect(true).toBe(false)
+  it.only("Should change the selected option properly", async () => {
+    const dropdown = screen.getByTestId('country-dropdown');
+    const placeholder = screen.queryByRole('option', {name: /placeholder/i})
+    expect(dropdown).toBeInTheDocument();
+    expect(placeholder).toBeVisible();
+
+    // How do I wait for the options to be loaded first?
+    
+    // userEvent.selectOptions(dropdown, 'br');
+    // expect(placeholder).not.toBeVisible();
   });
 
   it("Should render Clear button as enabled after country selection", async () => {
