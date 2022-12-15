@@ -1,10 +1,10 @@
-import { IResidenceItem } from "../../Components/types";
+import { IResidenceItem } from "../../Components/types"
 
 type TFakeResidenceList = {
-  echo_req: object;
-  msg_type: string;
-  residence_list: IResidenceItem[];
-};
+  echo_req: object
+  msg_type: string
+  residence_list: IResidenceItem[]
+}
 
 export const fake_residence_list: TFakeResidenceList = {
   echo_req: { residence_list: 1 },
@@ -36,4 +36,4 @@ export const fake_residence_list: TFakeResidenceList = {
       value: "nl",
     },
   ],
-};
+}

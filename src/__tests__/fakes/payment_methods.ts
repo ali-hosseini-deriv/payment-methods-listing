@@ -1,10 +1,10 @@
-import { IPaymentMethod } from "../../Components/types";
+import { IPaymentMethod } from "../../Components/types"
 
 type TFakePaymentMethods = {
-  echo_req: object;
-  msg_type: string;
-  payment_methods: IPaymentMethod[];
-};
+  echo_req: object
+  msg_type: string
+  payment_methods: IPaymentMethod[]
+}
 export const fake_payment_methods: TFakePaymentMethods = {
   echo_req: {
     country: "zw",
@@ -20,4 +20,4 @@ export const fake_payment_methods: TFakePaymentMethods = {
       supported_currencies: ["USD"],
     },
   ],
-};
+}

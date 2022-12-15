@@ -1,63 +1,63 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { IPaymentMethod, IResidenceItem } from "./types";
+import React, { useCallback, useEffect, useState } from "react"
+import { IPaymentMethod, IResidenceItem } from "./types"
 
 type TCountryListProps = {
-  websocket: React.MutableRefObject<WebSocket | undefined>;
-};
+  websocket: React.MutableRefObject<WebSocket | undefined>
+}
 
 const CountryList = ({ websocket }: TCountryListProps) => {
   const [selected_country, setSelectedCountry] =
-    useState<IResidenceItem["value"]>("");
-  const [countries, setCountries] = useState<IResidenceItem[]>([]);
-  const [payment_methods, setPaymentMethods] = useState<IPaymentMethod[]>([]);
+    useState<IResidenceItem["value"]>("")
+  const [countries, setCountries] = useState<IResidenceItem[]>([])
+  const [payment_methods, setPaymentMethods] = useState<IPaymentMethod[]>([])
 
   const send = useCallback(
     (message: object) => {
       if (websocket.current?.readyState === 1) {
-        websocket?.current?.send(JSON.stringify(message));
+        websocket?.current?.send(JSON.stringify(message))
       }
     },
     [websocket]
-  );
+  )
 
   useEffect(() => {
     websocket.current?.addEventListener("open", () => {
-      send({ residence_list: 1 });
-    });
+      send({ residence_list: 1 })
+    })
 
     websocket.current?.addEventListener("message", (message) => {
-      const data = JSON.parse(message.data);
+      const data = JSON.parse(message.data)
 
       switch (data.msg_type) {
         case "residence_list":
-          setCountries(data?.residence_list);
-          break;
+          setCountries(data?.residence_list)
+          break
         case "payment_methods":
-          setPaymentMethods(data?.payment_methods);
-          break;
+          setPaymentMethods(data?.payment_methods)
+          break
       }
-    });
+    })
 
     return () => {
       if ([0, 1].includes(websocket?.current?.readyState || 3)) {
-        websocket?.current?.close();
+        websocket?.current?.close()
       }
-    };
-  }, []);
+    }
+  }, [])
 
   const onGetListClicked = () => {
     if (selected_country !== "") {
       send({
         payment_methods: 1,
         country: selected_country,
-      });
+      })
     }
-  };
+  }
 
   const onClearClicked = () => {
-    setSelectedCountry("");
+    setSelectedCountry("")
     setPaymentMethods([])
-  };
+  }
 
   return (
     <article>
@@ -67,7 +67,7 @@ const CountryList = ({ websocket }: TCountryListProps) => {
           data-testid="country-dropdown"
           value={selected_country}
           onChange={(e) => {
-            setSelectedCountry(e.target.value);
+            setSelectedCountry(e.target.value)
           }}
         >
           <option value="" disabled>
@@ -78,7 +78,7 @@ const CountryList = ({ websocket }: TCountryListProps) => {
               <option key={c?.text} value={c?.value}>
                 {`${c?.text} - ${c?.value}`}
               </option>
-            );
+            )
           })}
         </select>
         <button onClick={onGetListClicked}>Get List</button>
@@ -109,7 +109,7 @@ const CountryList = ({ websocket }: TCountryListProps) => {
         </section>
       ) : null}
     </article>
-  );
-};
+  )
+}
 
-export default CountryList;
+export default CountryList
