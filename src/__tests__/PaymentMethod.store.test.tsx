@@ -13,7 +13,7 @@ describe("Store", () => {
   afterEach(() => {
     store.clear();
   });
-
+//there is a simular test on line 49, what is the catch?
   it("Should have loading as false", () => {
     expect(store.loading).toBeFalsy();
   });
@@ -27,25 +27,33 @@ describe("Store", () => {
   });
 
   it("Should update the selected country", () => {
-    expect(true).toBeFalsy();
+    store.updateSelectedCountry(fake_residence_list.residence_list[0]);
+    expect(store.selectedCountry).toEqual(fake_residence_list.residence_list[0]);
   });
 
   it("Should have initial select country value on resetSelectedCountry", () => {
-    expect(true).toBeFalsy();
+    store.resetSelectedCountry();
+    expect(store.selectedCountry).toEqual(selectedCountryInitValue);
   });
 
   it("Should update payment methods", () => {
-    expect(true).toBeFalsy();
+    store.updatePaymentMethods(fake_payment_methods.payment_methods);
+    expect(store.paymentMethods).toEqual(fake_payment_methods.payment_methods);
   });
 
   it("Should clear payment methods on resetPaymentMethods", () => {
-    expect(true).toBeFalsy();
+    store.resetPaymentMethods();
+    expect(store.paymentMethods).toHaveLength(0);
   });
 
-  it("Should have loading as fulsy by default", () => {
-    expect(true).toBeFalsy();
+  it("Should have loading as falsy by default", () => {
+    expect(store.loading).toBeFalsy();
   });
+
   it("Should have loading as truthy on toggleLoading", () => {
-    expect(true).toBeFalsy();
+    //actually, I check default in prev. test, so probably there is no need in line 55
+    expect(store.loading).toBeFalsy();
+    store.toggleLoading();
+    expect(store.loading).toBeTruthy();
   });
 });
