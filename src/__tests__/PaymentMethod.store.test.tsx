@@ -26,26 +26,59 @@ describe("Store", () => {
     expect(store.countryListStore).toEqual(fake_residence_list.residence_list);
   });
 
-  it("Should update the selected country", () => {
-    expect(true).toBeFalsy();
+  it("Should update the selected country", async () => {
+    store.updateCountryList(fake_residence_list.residence_list);
+    store.updateSelectedCountry(fake_residence_list.residence_list[0]);
+
+    expect(store.selectedCountry).toStrictEqual({
+      phone_idd: "91",
+      text: "India",
+      value: "in",
+    });
   });
 
   it("Should have initial select country value on resetSelectedCountry", () => {
-    expect(true).toBeFalsy();
+    store.updateCountryList(fake_residence_list.residence_list);
+    store.updateSelectedCountry(fake_residence_list.residence_list[2]);
+
+    expect(store.selectedCountry).toStrictEqual({
+      phone_idd: "62",
+      text: "Indonesia",
+      value: "id",
+    });
+
+    store.resetSelectedCountry();
+    expect(store.selectedCountry).toStrictEqual(selectedCountryInitValue);
   });
 
   it("Should update payment methods", () => {
-    expect(true).toBeFalsy();
+    store.updatePaymentMethods(fake_payment_methods.payment_methods);
+    expect(store.paymentMethods).toHaveLength(
+      fake_payment_methods.payment_methods.length
+    );
+    expect(store.paymentMethods).toEqual(fake_payment_methods.payment_methods);
   });
 
   it("Should clear payment methods on resetPaymentMethods", () => {
-    expect(true).toBeFalsy();
+    store.updatePaymentMethods(fake_payment_methods.payment_methods);
+    expect(store.paymentMethods).toEqual(fake_payment_methods.payment_methods);
+    expect(store.paymentMethods).toHaveLength(
+      fake_payment_methods.payment_methods.length
+    );
+
+    store.resetPaymentMethods();
+    expect(store.paymentMethods).toHaveLength(0);
+    expect(store.paymentMethods).toEqual([]);
   });
 
-  it("Should have loading as fulsy by default", () => {
-    expect(true).toBeFalsy();
+  it("Should have loading as falsy by default", () => {
+    expect(store.loading).toBeFalsy();
   });
+
   it("Should have loading as truthy on toggleLoading", () => {
-    expect(true).toBeFalsy();
+    expect(store.loading).toBeFalsy();
+
+    store.toggleLoading();
+    expect(store.loading).toBeTruthy();
   });
 });
