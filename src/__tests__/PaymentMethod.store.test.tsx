@@ -34,7 +34,8 @@ describe("Store", () => {
   });
 
   it("Should have initial select country value on resetSelectedCountry", () => {
-    const selected_country = fake_residence_list.residence_list[0];
+    const selected_country: IResidenceItem =
+      fake_residence_list.residence_list[0];
     store.updateSelectedCountry(selected_country);
     store.resetSelectedCountry();
     expect(store.selectedCountry).toEqual(selectedCountryInitValue);
