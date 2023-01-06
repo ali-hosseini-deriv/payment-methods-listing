@@ -27,25 +27,36 @@ describe("Store", () => {
   });
 
   it("Should update the selected country", () => {
-    expect(true).toBeFalsy();
+    const selected_country: IResidenceItem =
+      fake_residence_list.residence_list[0];
+    store.updateSelectedCountry(selected_country);
+    expect(store.selectedCountry).toEqual(selected_country);
   });
 
   it("Should have initial select country value on resetSelectedCountry", () => {
-    expect(true).toBeFalsy();
+    const selected_country: IResidenceItem =
+      fake_residence_list.residence_list[0];
+    store.updateSelectedCountry(selected_country);
+    store.resetSelectedCountry();
+    expect(store.selectedCountry).toEqual(selectedCountryInitValue);
   });
 
   it("Should update payment methods", () => {
-    expect(true).toBeFalsy();
+    store.updatePaymentMethods(fake_payment_methods.payment_methods);
+    expect(store.paymentMethods).toEqual(fake_payment_methods.payment_methods);
   });
 
   it("Should clear payment methods on resetPaymentMethods", () => {
-    expect(true).toBeFalsy();
+    store.updatePaymentMethods(fake_payment_methods.payment_methods);
+    store.resetPaymentMethods();
+    expect(store.paymentMethods).toEqual([]);
   });
 
   it("Should have loading as fulsy by default", () => {
-    expect(true).toBeFalsy();
+    expect(store.loading).toBeFalsy();
   });
   it("Should have loading as truthy on toggleLoading", () => {
-    expect(true).toBeFalsy();
+    store.toggleLoading();
+    expect(store.loading).toBeTruthy();
   });
 });
