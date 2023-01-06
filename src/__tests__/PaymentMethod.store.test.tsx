@@ -27,25 +27,38 @@ describe("Store", () => {
   });
 
   it("Should update the selected country", () => {
-    expect(true).toBeFalsy();
+    const selectedCountry = fake_residence_list.residence_list[0]
+    store.updateSelectedCountry(selectedCountry)
+    expect(store.selectedCountry).toEqual(selectedCountry)
   });
 
   it("Should have initial select country value on resetSelectedCountry", () => {
-    expect(true).toBeFalsy();
+    store.resetSelectedCountry();
+    expect(store.selectedCountry).toEqual(selectedCountryInitValue)
   });
 
   it("Should update payment methods", () => {
-    expect(true).toBeFalsy();
+    store.updatePaymentMethods(fake_payment_methods.payment_methods);
+    expect(store.paymentMethods).toHaveLength(
+      fake_payment_methods.payment_methods.length
+    )
+    expect(store.paymentMethods).toEqual(fake_payment_methods.payment_methods);
   });
 
   it("Should clear payment methods on resetPaymentMethods", () => {
-    expect(true).toBeFalsy();
+    store.resetPaymentMethods();
+    expect(store.paymentMethods).toHaveLength(0)
   });
 
   it("Should have loading as fulsy by default", () => {
-    expect(true).toBeFalsy();
+    expect(store.loading).toBeFalsy();
   });
+
   it("Should have loading as truthy on toggleLoading", () => {
-    expect(true).toBeFalsy();
+    store.toggleLoading();
+    expect(store.loading).toBeTruthy();
+    store.toggleLoading();
+    store.toggleLoading();
+    expect(store.loading).toBeTruthy();
   });
 });
