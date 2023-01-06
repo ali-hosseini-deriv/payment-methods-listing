@@ -27,25 +27,32 @@ describe("Store", () => {
   });
 
   it("Should update the selected country", () => {
-    expect(true).toBeFalsy();
+    store.updateSelectedCountry({ text: 'India' , value: 'in' , phone_idd: '91' });
+    expect(store.selectedCountry).toEqual({ text: 'India' , value: 'in' , phone_idd: '91' });
   });
 
   it("Should have initial select country value on resetSelectedCountry", () => {
-    expect(true).toBeFalsy();
+    store.resetSelectedCountry();
+    expect(store.selectedCountry).toEqual(selectedCountryInitValue);
   });
 
   it("Should update payment methods", () => {
-    expect(true).toBeFalsy();
+    store.updatePaymentMethods(fake_payment_methods.payment_methods);
+    expect(store.paymentMethods).toHaveLength(fake_payment_methods.payment_methods.length);
+    expect(store.paymentMethods).toEqual(fake_payment_methods.payment_methods);
   });
 
   it("Should clear payment methods on resetPaymentMethods", () => {
-    expect(true).toBeFalsy();
+    store.resetPaymentMethods();
+    expect(store.paymentMethods.length).toEqual(0);
   });
 
   it("Should have loading as fulsy by default", () => {
-    expect(true).toBeFalsy();
+    store.clear();
+    expect(store.loading).toBeFalsy();
   });
-  it("Should have loading as truthy on toggleLoading", () => {
-    expect(true).toBeFalsy();
+  it("Should have loading as truthy on toggleLoading", async () => {
+    store.toggleLoading();
+    expect(store.loading).toBeTruthy();
   });
 });
