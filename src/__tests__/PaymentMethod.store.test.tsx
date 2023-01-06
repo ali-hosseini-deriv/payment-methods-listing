@@ -1,4 +1,3 @@
-import { IResidenceItem } from "../Components/types";
 import PaymentMethodStore, {
   selectedCountryInitValue,
 } from "../store/PaymentMethod.store";
@@ -7,15 +6,12 @@ import { fake_residence_list } from "./fakes/residence_list";
 
 describe("Store", () => {
   let store: PaymentMethodStore;
-  beforeEach(() => {
-    store = new PaymentMethodStore();
-  });
-  afterEach(() => {
-    store.clear();
-  });
+
+  beforeEach(() => (store = new PaymentMethodStore()));
+  afterEach(() => store.clear());
 
   it("Should have loading as false", () => {
-    expect(store.loading).toBeFalsy();
+    expect(store.loading).toEqual(false);
   });
 
   it("Should update country list", () => {
@@ -27,25 +23,34 @@ describe("Store", () => {
   });
 
   it("Should update the selected country", () => {
-    expect(true).toBeFalsy();
+    const selected_item = fake_residence_list.residence_list[1];
+    store.updateSelectedCountry(selected_item);
+    expect(store.selectedCountry).toEqual(selected_item);
   });
 
   it("Should have initial select country value on resetSelectedCountry", () => {
-    expect(true).toBeFalsy();
+    store.resetSelectedCountry();
+    expect(store.selectedCountry).toEqual(selectedCountryInitValue);
   });
 
   it("Should update payment methods", () => {
-    expect(true).toBeFalsy();
+    const data = fake_payment_methods.payment_methods;
+    store.updatePaymentMethods(data);
+    expect(store.paymentMethods).toHaveLength(data.length);
+    expect(store.paymentMethods).toEqual(data);
   });
 
   it("Should clear payment methods on resetPaymentMethods", () => {
-    expect(true).toBeFalsy();
+    store.resetPaymentMethods();
+    expect(store.paymentMethods.length).toEqual(0);
   });
 
   it("Should have loading as fulsy by default", () => {
-    expect(true).toBeFalsy();
+    expect(store.loading).toBeFalsy();
   });
+
   it("Should have loading as truthy on toggleLoading", () => {
-    expect(true).toBeFalsy();
+    store.toggleLoading();
+    expect(store.loading).toBeTruthy();
   });
 });
