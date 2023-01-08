@@ -1,5 +1,6 @@
-import {cleanup, render, screen, within} from "@testing-library/react";
+import { cleanup, render, screen, TestStore, within, act } from "../test-utils";
 import userEvent from "@testing-library/user-event";
+import { UserEvent } from "@testing-library/user-event/dist/types/setup/setup";
 import WS from "jest-websocket-mock";
 import CountryList from "../Components/CountryList";
 import { fake_payment_methods } from "./fakes/payment_methods";
@@ -22,28 +23,33 @@ describe("Payment Method", () => {
   afterEach(() => {
     WS.clean();
     cleanup();
+    TestStore.clear();
   });
 
   it("Should render Country Dropdown", () => {
-    expect(screen.getByTestId('country-dropdown')).toBeInTheDocument()
+    const country_dropdown = screen.getByTestId("country-dropdown");
+    expect(country_dropdown).toBeInTheDocument();
   });
 
   it("Should render Get List button", () => {
-    expect(screen.getByText('Get List')).toBeInTheDocument()
+    const find_button = screen.getByRole("button", { name: "Get List" });
+    expect(find_button).toBeInTheDocument();
   });
 
   it("Should render Clear button", () => {
-    expect(screen.getByText('Clear')).toBeInTheDocument()
-
+    const clear_button = screen.getByRole("button", { name: "Clear" });
+    expect(clear_button).toBeInTheDocument();
   });
 
   it("Should not render payment methods table on first render", () => {
-    expect(screen.getByTestId('country-dropdown')).toBeInTheDocument()
-    expect(screen.queryByText('table-body')).not.toBeInTheDocument()
+    const table = screen.queryByRole("table");
+    expect(table).not.toBeInTheDocument();
   });
 
   it("Should get residence list on first render from websocket server", async () => {
-    await expect(server).toReceiveMessage({ residence_list: 1 });
+    act(() => {
+      expect(server).toReceiveMessage({ residence_list: 1 });
+    });
   });
 
   it("Should render the options list properly", async () => {
@@ -53,66 +59,99 @@ describe("Payment Method", () => {
   });
 
   it("Should have placeholder option as selected", () => {
-    expect(screen.getByText('Please select a country')).toBeInTheDocument()
+    const select_placeholder_option = screen.getByRole("option", {
+      name: "Please select a country",
+    }) as HTMLOptionElement;
+
+    expect(select_placeholder_option.selected).toBe(true);
   });
 
   it("Should render Clear button as disabled", () => {
-    expect(screen.getByText('Clear')).toBeDisabled()
+    const clear_button = screen.getByRole("button", { name: "Clear" });
+    expect(clear_button).toBeDisabled();
   });
 
   it("Should change the selected option properly", async () => {
     server.send(fake_residence_list);
-    const select_placeholder_option = screen.getByRole("option", {
-      name: "Zimbabwe - zw",
+
+    const selectelement = screen.getByTestId("country-dropdown");
+    await userEvent.selectOptions(selectelement, "zw");
+
+    const item = screen.getByRole("option", {
+      name: `Zimbabwe - zw`,
     }) as HTMLOptionElement;
-    await userEvent.selectOptions(screen.getByTestId('country-dropdown'), select_placeholder_option)
-    expect(select_placeholder_option.selected).toBe(true)
+
+    expect(item.selected).toBe(true);
   });
 
   it("Should render Clear button as enabled after country selection", async () => {
     server.send(fake_residence_list);
-    const clear_btn = screen.getByText('Clear') as HTMLButtonElement
-    expect(clear_btn.disabled).toBe(true)
-    const select_placeholder_option = screen.getByRole("option", {
-      name: "Zimbabwe - zw",
-    }) as HTMLOptionElement;
-    await userEvent.selectOptions(screen.getByTestId('country-dropdown'), select_placeholder_option)
-    expect(clear_btn.disabled).toBe(false)
-
+    const selectelement = screen.getByTestId("country-dropdown");
+    await userEvent.selectOptions(selectelement, "zw");
+    const clear_button = screen.getByRole("button", { name: "Clear" });
+    expect(clear_button).toBeEnabled();
   });
 
   it("Should render the payment methods list on Get List button Click", async () => {
     server.send(fake_residence_list);
-    const clear_btn = screen.getByText('Clear') as HTMLButtonElement
-    expect(clear_btn.disabled).toBe(true)
-    const select_placeholder_option = screen.getByRole("option", {
-      name: "Zimbabwe - zw",
-    }) as HTMLOptionElement;
-    await userEvent.selectOptions(screen.getByTestId('country-dropdown'), select_placeholder_option)
-    const get_btn = screen.getByText('Get List')
-    expect(clear_btn.disabled).toBe(false)
-    await userEvent.click(get_btn)
+
+    const selectelement = screen.getByTestId("country-dropdown");
+    await userEvent.selectOptions(selectelement, "zw");
+
+    const find_button = screen.getByRole("button", { name: "Get List" });
+    await userEvent.click(find_button);
     server.send(fake_payment_methods);
-    expect(screen.getByText('Display Name')).toBeInTheDocument()
-    expect(screen.getByText('Supported Currencies')).toBeInTheDocument()
-    expect(screen.getByText('Description')).toBeInTheDocument()
+
+    const table_body = screen.getByTestId("table-body");
+    expect(table_body.childElementCount).toBe(
+      fake_payment_methods.payment_methods.length
+    );
+
+    const within_table_body = within(table_body);
+
+    const id_cell = within_table_body.getByRole("cell", {
+      name: "DP2P is Deriv's peer-to-peer deposit and withdrawal service",
+    });
+    expect(id_cell).toBeInTheDocument();
+
+    const display_name_cell = within_table_body.getByRole("cell", {
+      name: /^DP2P$/,
+    });
+    expect(display_name_cell).toBeInTheDocument();
+
+    const currencies_cell = within_table_body.getByRole("cell", {
+      name: fake_payment_methods.payment_methods[0].supported_currencies.join(
+        ","
+      ),
+    });
+    expect(currencies_cell).toBeInTheDocument();
   });
 
   it("Should clear dropdown on Clear button Click", async () => {
     server.send(fake_residence_list);
-    const clear_btn = screen.getByText('Clear') as HTMLButtonElement
-    expect(clear_btn.disabled).toBe(true)
-    const select_placeholder_option = screen.getByRole("option", {
-      name: "Zimbabwe - zw",
+
+    const clear_button = screen.getByRole("button", { name: "Clear" });
+
+    expect(clear_button).toBeDisabled();
+
+    const selectelement = screen.getByTestId("country-dropdown");
+    await userEvent.selectOptions(selectelement, "zw");
+
+    const item = screen.getByRole("option", {
+      name: `Zimbabwe - zw`,
     }) as HTMLOptionElement;
-    const select_placeholder_option_default = screen.getByRole("option", {
+
+    expect(item.selected).toBe(true);
+
+    await userEvent.click(clear_button);
+    const select_placeholder_option = screen.getByRole("option", {
       name: "Please select a country",
     }) as HTMLOptionElement;
-    await userEvent.selectOptions(screen.getByTestId('country-dropdown'), select_placeholder_option)
-    expect(select_placeholder_option.selected).toBe(true)
-    expect(select_placeholder_option_default.selected).toBe(false)
-    await userEvent.click(clear_btn)
-    expect(select_placeholder_option.selected).toBe(false)
-    expect(select_placeholder_option_default.selected).toBe(true)
+
+    expect(clear_button).toBeDisabled();
+
+    expect(select_placeholder_option.selected).toBe(true);
+    const table = screen.queryByRole("table");
+    expect(table).not.toBeInTheDocument();
   });
 });
