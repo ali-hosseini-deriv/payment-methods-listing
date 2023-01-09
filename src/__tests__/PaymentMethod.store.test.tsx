@@ -1,4 +1,3 @@
-import { IResidenceItem } from "../Components/types";
 import PaymentMethodStore, {
   selectedCountryInitValue,
 } from "../store/PaymentMethod.store";
@@ -27,25 +26,41 @@ describe("Store", () => {
   });
 
   it("Should update the selected country", () => {
-    expect(true).toBeFalsy();
+    expect(store.selectedCountry).toEqual(selectedCountryInitValue);
+    store.updateSelectedCountry(fake_residence_list.residence_list[0]);
+    expect(store.selectedCountry).toEqual(fake_residence_list.residence_list[0]);
   });
 
   it("Should have initial select country value on resetSelectedCountry", () => {
-    expect(true).toBeFalsy();
+    expect(store.selectedCountry).toEqual(selectedCountryInitValue);
+    store.updateSelectedCountry(fake_residence_list.residence_list[0]);
+    expect(store.selectedCountry).toEqual(fake_residence_list.residence_list[0]);
+    store.resetSelectedCountry();
+    expect(store.selectedCountry).toEqual(selectedCountryInitValue);
   });
 
   it("Should update payment methods", () => {
-    expect(true).toBeFalsy();
+    expect(store.paymentMethods).toHaveLength(0);
+    store.updatePaymentMethods(fake_payment_methods.payment_methods);
+    expect(store.paymentMethods).toHaveLength(1);
   });
 
   it("Should clear payment methods on resetPaymentMethods", () => {
-    expect(true).toBeFalsy();
+    expect(store.paymentMethods).toHaveLength(0);
+    store.updatePaymentMethods(fake_payment_methods.payment_methods);
+    expect(store.paymentMethods).toHaveLength(1);
+    store.resetPaymentMethods();
+    expect(store.paymentMethods).toHaveLength(0);
   });
 
-  it("Should have loading as fulsy by default", () => {
-    expect(true).toBeFalsy();
+  it("Should have loading as falsy by default", () => {
+    expect(store.loading).toBeFalsy();
   });
+
   it("Should have loading as truthy on toggleLoading", () => {
-    expect(true).toBeFalsy();
+    expect(store.loading).toBeFalsy();
+    store.toggleLoading()
+    expect(store.loading).toBeTruthy();
+
   });
 });
